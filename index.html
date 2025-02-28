@@ -5,57 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil Profissional - Guilherme Kauan</title>
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --primary-color: #58a6ff;
+            --container-bg: #161b22;
+            --header-bg: #010409;
+            --footer-bg: #010409;
+            --border-radius: 8px;
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            text-align: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
         header {
-            background-color: #ffcc00;
+            background-color: var(--header-bg);
             padding: 20px;
-            color: #1a1a1a;
             font-size: 24px;
             font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background-color: var(--container-bg);
+            padding: 15px;
+        }
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            color: white;
         }
         .container {
             max-width: 800px;
             margin: 40px auto;
-            background-color: #292929;
+            background-color: var(--container-bg);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
         }
         .highlight {
-            color: #ffcc00;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        .card {
+            background-color: #21262d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .card:hover {
+            background-color: #30363d;
+        }
+        .card-content {
+            display: none;
+            margin-top: 10px;
         }
         footer {
             margin-top: 40px;
             padding: 10px;
-            background-color: #333;
+            background-color: var(--footer-bg);
             font-size: 14px;
+            text-align: center;
         }
     </style>
+    <script>
+        function toggleCard(id) {
+            var content = document.getElementById(id);
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
 </head>
 <body>
     <header>
         Guilherme Kauan Marques da Silva
     </header>
+    <nav>
+        <a href="#sobre">Sobre Mim</a>
+        <a href="#habilidades">Habilidades</a>
+        <a href="#objetivo">Objetivo</a>
+    </nav>
     <div class="container">
-        <h2>👨‍💻 Sobre Mim</h2>
-        <p>Sou <span class="highlight">desenvolvedor júnior</span>, atuando há 3 anos em <span class="highlight">Delphi (Pascal)</span> e <span class="highlight">SQL Server</span>, trabalhando atualmente em uma indústria metalúrgica em Cuiabá.</p>
-        <p>Cursando <span class="highlight">Ciência da Computação</span>. Tenho experiência desde 2022, passando por aprendiz, estágio e agora como desenvolvedor efetivado.</p>
-        <h2>🛠️ Habilidades</h2>
-        <ul style="list-style: none; padding: 0;">
-            <li>✅ Delphi (Pascal)</li>
-            <li>✅ SQL Server & MySQL</li>
-            <li>✅ Desenvolvimento Web (HTML, CSS, Django)</li>
-            <li>✅ Aplicações Móveis (Flutter/Dart)</li>
-        </ul>
-        <h2>🚀 Objetivo</h2>
-        <p>Busco constantemente melhorar minhas habilidades e contribuir para projetos inovadores.</p>
+        <div class="card" onclick="toggleCard('sobre-content')">
+            <h2>👨‍💻 Sobre Mim</h2>
+            <div class="card-content" id="sobre-content">
+                <p>Sou <span class="highlight">desenvolvedor júnior</span>, atuando há 3 anos em <span class="highlight">Delphi (Pascal)</span> e <span class="highlight">SQL Server</span>, trabalhando atualmente em uma indústria metalúrgica em Cuiabá.</p>
+                <p>Cursando <span class="highlight">Ciência da Computação</span>. Tenho experiência desde 2022, passando por aprendiz, estágio e agora como desenvolvedor efetivado.</p>
+            </div>
+        </div>
+        <div class="card" onclick="toggleCard('habilidades-content')">
+            <h2>🛠️ Habilidades</h2>
+            <div class="card-content" id="habilidades-content">
+                <ul>
+                    <li>✅ Delphi (Pascal)</li>
+                    <li>✅ SQL Server & MySQL</li>
+                    <li>✅ Desenvolvimento Web (HTML, CSS, Django)</li>
+                    <li>✅ Aplicações Móveis (Flutter/Dart)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card" onclick="toggleCard('objetivo-content')">
+            <h2>🚀 Objetivo</h2>
+            <div class="card-content" id="objetivo-content">
+                <p>Busco constantemente melhorar minhas habilidades e contribuir para projetos inovadores.</p>
+            </div>
+        </div>
     </div>
     <footer>
         © 2024 Guilherme Kauan | Desenvolvedor Júnior
