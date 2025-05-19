@@ -1,0 +1,22 @@
+{% extends 'alunos/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Gerar Mensalidade{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4>Gerar Nova Mensalidade</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Gerar Mensalidade</button>
+                <a href="{% url 'mensalidade-list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

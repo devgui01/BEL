@@ -1,0 +1,115 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Lista de Alunos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2">Lista de Alunos</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'aluno-create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Aluno
+            </a>
+        </div>
+    </div>
+
+    <!-- Barra de Busca -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Buscar por nome, telefone ou email..." value="{{ search_query }}">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+                {% if search_query %}
+                <div class="col-md-4">
+                    <a href="{% url 'aluno-list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Limpar Busca
+                    </a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Alunos -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Faixa</th>
+                            <th>Contato</th>
+                            <th>Endereço</th>
+                            <th>Status</th>
+                            <th>Bolsista</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aluno in alunos %}
+                        <tr>
+                            <td>
+                                <strong>{{ aluno.nome }}</strong>
+                                <br>
+                                <small class="text-muted">Cadastro: {{ aluno.data_cadastro|date:"d/m/Y" }}</small>
+                            </td>
+                            <td>
+                                <span class="badge {% if aluno.faixa == 'PRETA' %}bg-dark{% elif aluno.faixa == 'MARROM' %}bg-danger{% elif aluno.faixa == 'ROXA' %}bg-primary{% elif aluno.faixa == 'AZUL' %}bg-info{% else %}bg-light text-dark{% endif %}">
+                                    {{ aluno.get_faixa_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <i class="fas fa-phone"></i> {{ aluno.telefone }}
+                                {% if aluno.email %}
+                                <br>
+                                <i class="fas fa-envelope"></i> {{ aluno.email }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="fas fa-map-marker-alt"></i> {{ aluno.endereco }}
+                            </td>
+                            <td>
+                                {% if aluno.ativo %}
+                                <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if aluno.bolsista %}
+                                <span class="badge bg-info">Sim</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Não</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'aluno-update' aluno.pk %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">Nenhum aluno encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %} 

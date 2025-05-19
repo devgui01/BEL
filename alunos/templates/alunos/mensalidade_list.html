@@ -1,0 +1,83 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Mensalidades{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2">Mensalidades</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'gerar-mensalidades' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Gerar Mensalidade
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th>Data Vencimento</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mensalidade in mensalidades %}
+                        <tr>
+                            <td>
+                                <strong>{{ mensalidade.aluno.nome }}</strong>
+                                {% if mensalidade.aluno.bolsista %}
+                                <br>
+                                <span class="badge bg-info">Bolsista</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ mensalidade.data_vencimento|date:"d/m/Y" }}</td>
+                            <td>R$ {{ mensalidade.valor }}</td>
+                            <td>
+                                {% if mensalidade.pago %}
+                                <span class="badge bg-success">Pago</span>
+                                {% else %}
+                                <span class="badge bg-danger">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not mensalidade.pago %}
+                                <a href="{% url 'registrar-pagamento' mensalidade.pk %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Registrar Pagamento
+                                </a>
+                                <a href="{% url 'editar-mensalidade' mensalidade.pk %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="{% url 'excluir-mensalidade' mensalidade.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta mensalidade?');">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </a>
+                                {% else %}
+                                <span class="text-success">
+                                    <i class="fas fa-check-circle"></i> Pago
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Nenhuma mensalidade pendente encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %} 
