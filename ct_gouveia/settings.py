@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,11 +80,15 @@ WSGI_APPLICATION = 'ct_gouveia.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'CTGOUVEIAA',  # Nome do seu novo banco de dados SQL Server
+        'HOST': 'localhost\\SQLEXPRESS01,62397',  # Endereço e porta dinâmica do servidor SQL Server local
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server', # Confirme o nome do driver instalado
+            'authentication': 'Windows', # Use 'Windows' para autenticação Windows
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

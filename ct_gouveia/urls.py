@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('alunos.urls')),
