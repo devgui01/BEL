@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
 from .forms import GerarMensalidadeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
@@ -31,7 +32,7 @@ class AlunoListView(ListView):
         context['search_query'] = self.request.GET.get('search', '')
         return context
 
-class AlunoCreateView(CreateView):
+class AlunoCreateView(LoginRequiredMixin, CreateView):
     model = Aluno
     template_name = 'alunos/aluno_form.html'
     fields = ['nome', 'data_nascimento', 'telefone', 'email', 'endereco', 'faixa', 'bolsista']
@@ -90,6 +91,9 @@ def gerar_mensalidades(request):
             # Se o aluno for bolsista e o valor não foi alterado, usa o valor padrão
             if mensalidade.aluno.bolsista and mensalidade.valor == 150.00:
                 mensalidade.valor = 100.00
+            
+            mensalidade.status = 'ATIVO'
+            
             mensalidade.save()
             messages.success(request, 'Mensalidade gerada com sucesso!')
             return redirect('mensalidade-list')
