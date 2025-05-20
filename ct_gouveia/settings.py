@@ -78,17 +78,34 @@ WSGI_APPLICATION = 'ct_gouveia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'CTGOUVEIAA',  # Nome do seu novo banco de dados SQL Server
-        'HOST': 'localhost\\SQLEXPRESS01,62397',  # Endereço e porta dinâmica do servidor SQL Server local
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server', # Confirme o nome do driver instalado
-            'authentication': 'Windows', # Use 'Windows' para autenticação Windows
-        },
+if 'RENDER' in os.environ:
+    # Configuração para produção no Render
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+    DEBUG = False
+    ALLOWED_HOSTS = ['.render.com'] # Permite o domínio do Render
+    # Outras configurações de produção podem ir aqui (STATIC_ROOT, etc.)
+
+else:
+    # Configuração para desenvolvimento local (usando SQL Server)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'mssql',
+            'NAME': 'CTGOUVEIAA',  # Nome do seu banco de dados SQL Server
+            'HOST': 'localhost\\SQLEXPRESS01,62397',  # Endereço e porta dinâmica do servidor SQL Server local
+            'OPTIONS': {
+                'driver': 'ODBC Driver 17 for SQL Server', # Confirme o nome do driver instalado
+                'authentication': 'Windows', # Use 'Windows' para autenticação Windows
+            },
+        }
+    }
+    DEBUG = True
+    ALLOWED_HOSTS = [] # Ou ['127.0.0.1', 'localhost']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
