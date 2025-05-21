@@ -26,10 +26,13 @@ class GerarMensalidadeForm(forms.ModelForm):
 class AlunoForm(forms.ModelForm):
     class Meta:
         model = Aluno
-        fields = ['nome', 'data_nascimento', 'telefone', 'email', 'endereco', 'faixa', 'bolsista']
-        widgets = {
-            'data_nascimento': forms.DateInput(attrs={'id': 'id_data_nascimento', 'class': 'form-control', 'type': 'text'}),
-            'telefone': forms.TextInput(attrs={'id': 'id_telefone', 'class': 'form-control'}),
+        fields = '__all__'
+        # Personaliza a mensagem de erro para datas inválidas
+        error_messages = {
+            'data_nascimento': {
+                'invalid': "Informe uma data válida. Por exemplo, Fevereiro não tem 30 dias.",
+                'invalid_date': "Formato de data inválido. Use o formato AAAA-MM-DD ou verifique se a data existe no calendário.", # Mensagem mais detalhada para data inválida
+            }
         }
 
 class SignUpForm(UserCreationForm):

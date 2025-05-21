@@ -163,7 +163,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                {# Mostra os links de navegação apenas se a URL atual NÃO for a de login NEM a de cadastro #}
+                {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' %}
+                <ul class="navbar-nav me-auto"> {# Adicionado me-auto aqui #}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'aluno-list' %}">
                             <i class="fas fa-users"></i> Alunos
@@ -175,6 +177,7 @@
                         </a>
                     </li>
                 </ul>
+                {% endif %} {# Fim da condição para não mostrar na página de login/cadastro #}
                 {% if user.is_authenticated %}
                 <div class="dropdown ms-auto">
                     <div class="avatar-dropdown d-flex align-items-center" data-bs-toggle="dropdown">

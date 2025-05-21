@@ -63,7 +63,7 @@
                                 <small class="text-muted">Cadastro: {{ aluno.data_cadastro|date:"d/m/Y" }}</small>
                             </td>
                             <td>
-                                <span class="badge {% if aluno.faixa == 'PRETA' %}bg-dark{% elif aluno.faixa == 'MARROM' %}bg-danger{% elif aluno.faixa == 'ROXA' %}bg-primary{% elif aluno.faixa == 'AZUL' %}bg-info{% else %}bg-light text-dark{% endif %}">
+                                <span class="badge {% if aluno.faixa == 'PRETA' %}bg-preta{% elif aluno.faixa == 'MARROM' %}bg-marrom{% elif aluno.faixa == 'ROXA' %}bg-roxa{% elif aluno.faixa == 'AZUL' %}bg-azul{% elif aluno.faixa == 'BRANCA' %}bg-branca{% else %}bg-secondary{% endif %}">
                                     {{ aluno.get_faixa_display }}
                                 </span>
                             </td>

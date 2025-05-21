@@ -4,7 +4,7 @@ from django.utils import timezone
 class Aluno(models.Model):
     nome = models.CharField(max_length=100)
     data_nascimento = models.DateField()
-    telefone = models.CharField(max_length=15)
+    telefone = models.CharField(max_length=25)
     email = models.EmailField(blank=True, null=True)
     endereco = models.CharField(max_length=200)
     data_cadastro = models.DateField(auto_now_add=True)
