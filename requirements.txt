@@ -4,4 +4,5 @@ django-crispy-forms==2.1
 crispy-bootstrap5==2023.10
 psycopg2-binary
 dj_database_url
-gunicorn 
+gunicorn
+whitenoise 
