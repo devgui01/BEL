@@ -1,0 +1,30 @@
+{% extends 'alunos/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registrar{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-4 text-center">Criar Conta do Sistema</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary btn-block mt-3">Registrar</button>
+                    </form>
+                    
+                    <p class="mt-3 text-center">Já tem uma conta? <a href="{% url 'login' %}">Faça login aqui</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{# Não precisamos de extra_js ou extra_css específicos aqui por enquanto #}
+{% block extra_js %}{% endblock %}
+{% block extra_css %}{% endblock %} 

@@ -4,10 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CT GOUVEIA - {% block title %}{% endblock %}</title>
+    <title>BASE ESCOLA DE LUTAS - {% block title %}{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     {% block extra_css %}{% endblock %}
     <style>
+        /* --- Paleta de Cores e Estilos Gerais --- */
+        :root {
+            --primary-dark-blue: #1A4D7F; /* Azul escuro principal */
+            --primary-blue: #2A5E8A;    /* Azul médio */
+            --light-grey: #E0E0E0;      /* Cinza claro para texto/elementos claros */
+            --dark-grey: #343a40;       /* Cinza escuro */
+            --white: #FFFFFF;           /* Branco */
+
+            /* Cores de Status/Destaque (ajustadas para harmonizar) */
+            --status-success: #218838;  /* Verde um pouco mais escuro */
+            --status-danger: #c82333;   /* Vermelho um pouco mais escuro */
+            --status-warning: #e0a800;  /* Laranja/Amarelo um pouco mais escuro */
+            --badge-info: #138496;      /* Azul/Ciano um pouco mais escuro/acinzentado */
+        }
+
+        body {
+             background-color: #f8f9fa; /* Fundo claro sutil */
+             color: #212529; /* Cor de texto padrão escura */
+        }
+
+        /* Navbar */
+        .navbar-custom {
+            background-color: var(--primary-dark-blue); /* Usa variável */
+        }
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+            color: var(--light-grey); /* Usa variável */
+            transition: color 0.3s ease; /* Transição de cor para links */
+        }
+         .navbar-custom .nav-link:hover {
+            color: var(--white); /* Usa variável */
+         }
+         /* Animação para ícones na navbar */
+         .navbar-custom .nav-link i {
+             transition: transform 0.3s ease; /* Transição para o ícone */
+         }
+         .navbar-custom .nav-link:hover i {
+             transform: scale(1.1); /* Aumenta levemente o ícone no hover */
+         }
+
         .navbar-brand {
             display: flex;
             align-items: center;
@@ -18,39 +59,111 @@
             width: auto;
             object-fit: contain;
         }
+
+        /* Tabelas */
         .table th {
-            background-color: #343a40;
-            color: white;
+            background-color: var(--primary-blue); /* Usa variável */
+            color: var(--white); /* Usa variável */
         }
         .table-hover tbody tr:hover {
-            background-color: rgba(0,0,0,.075);
+            background-color: rgba(0,0,0,.05); /* Hover sutil */
         }
+
+        /* Badges */
         .badge {
             font-size: 0.9em;
             padding: 0.5em 0.8em;
+            /* Garantir cores dos badges de status/destaque */
+            &.bg-success { background-color: var(--status-success) !important; color: white; }
+            &.bg-danger { background-color: var(--status-danger) !important; color: white; }
+            &.bg-warning { background-color: var(--status-warning) !important; color: white; }
+            &.bg-info { background-color: var(--badge-info) !important; color: white; } /* Bolsista */
+            /* Cores para faixas (usando tons de cinza ou cores específicas se necessário) */
+            &.bg-marrom { background-color: #795548; color: white; }
+            &.bg-preta { background-color: #212529; color: white; }
+            &.bg-roxa { background-color: #6f42c1; color: white; }
+            &.bg-azul { background-color: #007bff; color: white; }
+            &.bg-branca { background-color: #f8f9fa; color: #212529; border: 1px solid #ced4da; }
+
         }
-        .bg-purple {
-            background-color: #6f42c1;
-            color: white;
+
+
+        /* Animações */
+        /* Animação sutil para os botões */
+        .btn {
+            transition: all 0.3s ease; /* Transição suave para todas as propriedades em 0.3 segundos */
         }
-        .bg-brown {
-            background-color: #795548;
-            color: white;
+        .btn:hover {
+            transform: translateY(-2px); /* Levantar um pouco no hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adicionar uma sombra */
         }
+        .btn:active {
+            transform: translateY(0); /* Voltar à posição original ao clicar */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra menor ao clicar */
+        }
+
+        /* Animação de fade-in para o conteúdo principal */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .container.mt-4 {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .avatar-dropdown {
+            cursor: pointer;
+            color: var(--light-grey);
+        }
+        .avatar-dropdown:hover {
+            color: var(--white);
+        }
+
+        .avatar-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .dropdown-menu {
+            min-width: 200px;
+        }
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            color: var(--dark-grey);
+        }
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+            color: var(--dark-grey);
+        }
+        .dropdown-item.text-danger {
+            color: var(--status-danger) !important;
+        }
+        .dropdown-item.text-danger i {
+            color: var(--status-danger) !important;
+        }
+
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="{% url 'aluno-list' %}">
-                <img src="{% static 'gouveia.png' %}" alt="CT GOUVEIA Logo">
-                <span>CT GOUVEIA</span>
+                <img src="{% static 'gouveia.png' %}" alt="BASE ESCOLA DE LUTAS Logo">
+                <span>BASE ESCOLA DE LUTAS</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'aluno-list' %}">
                             <i class="fas fa-users"></i> Alunos
@@ -62,6 +175,38 @@
                         </a>
                     </li>
                 </ul>
+                {% if user.is_authenticated %}
+                <div class="dropdown ms-auto">
+                    <div class="avatar-dropdown d-flex align-items-center" data-bs-toggle="dropdown">
+                        <div class="avatar-icon me-2">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-lg-inline">{{ user.username }}</span>
+                        <i class="fas fa-chevron-down ms-2"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user-cog"></i>Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cog"></i>Configurações
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                                {% csrf_token %}
+                            </form>
+                            <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i>Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -81,5 +226,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html> 

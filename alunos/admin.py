@@ -9,6 +9,6 @@ class AlunoAdmin(admin.ModelAdmin):
 
 @admin.register(Mensalidade)
 class MensalidadeAdmin(admin.ModelAdmin):
-    list_display = ('aluno', 'data_vencimento', 'valor', 'pago', 'data_pagamento')
-    list_filter = ('pago', 'data_vencimento')
+    list_display = ('aluno', 'data_vencimento', 'valor', 'status', 'data_pagamento')
+    list_filter = ('status', 'data_vencimento')
     search_fields = ('aluno__nome',)

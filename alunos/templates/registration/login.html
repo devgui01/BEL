@@ -1,0 +1,113 @@
+{% extends 'alunos/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{# Remover o conteúdo principal do base.html na tela de login #}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    {# Logo centralizada #}
+                    <img src="{% static 'gouveia.png' %}" alt="BASE ESCOLA DE LUTAS Logo" style="max-height: 100px; margin-bottom: 20px;">
+                    
+                    {# Título alterado com spans para estilização individual das letras #}
+                    <h4 class="mb-4 login-title animate__animated animate__fadeInDown"><span class="bel-b">B</span><span class="bel-el">EL</span></h4>
+
+                    {# Formulário de Login #}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary btn-block mt-3 animate__animated animate__fadeInUp">Entrar</button>
+                        {# Ocultar links de senha esquecida se não forem necessários #}
+                        {# <p class="mt-3"><a href="{% url 'password_reset' %}">Esqueceu sua senha?</a></p> #}
+                    </form>
+                    
+                    {# Link para registro (vamos criar em seguida) #}
+                    <p class="mt-3 animate__animated animate__fadeInUp animate__delay-1s">Não tem uma conta? <a href="{% url 'signup' %}">Crie uma aqui</a>.</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{# Não precisamos de extra_js ou extra_css específicos aqui por enquanto #}
+{% block extra_js %}{% endblock %}
+
+{% block extra_css %}
+    {# Links para as fontes do Google Fonts e Animate.css #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        /* Estilo para o título de login */
+        .login-title {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700; /* Usar a variação em negrito da fonte */
+            /* Removemos a cor padrão aqui para colorir via spans */
+        }
+        /* Estilo para a letra 'B' */
+        .login-title .bel-b {
+            color: var(--primary-blue); /* Usa a cor azul primária do tema */
+        }
+        /* Estilo para as letras 'EL' */
+        .login-title .bel-el {
+            color: #6c757d; /* Usando um tom de cinza similar ao do exemplo */
+        }
+
+        /* Estilo para os rótulos do formulário */
+        .card-body form label {
+            font-weight: 700;
+            color: var(--dark-grey); /* Usa a cor escura do tema para rótulos */
+            margin-bottom: .5rem; /* Espaço abaixo do rótulo */
+            display: inline-block; /* Garante que margem funcione */
+             width: 100%; /* Ocupa a largura total disponível */
+             text-align: left; /* Alinha o texto do rótulo à esquerda */
+        }
+
+        /* Estilo para os campos de input (ajustando o estilo padrão do crispy-forms/bootstrap) */
+        .card-body form .form-control {
+             border-color: var(--primary-blue); /* Borda com a cor primária do tema */
+             box-shadow: none; /* Remove sombra padrão */
+        }
+        .card-body form .form-control:focus {
+             border-color: var(--primary-dark-blue); /* Borda mais escura no foco */
+             box-shadow: 0 0 0 .25rem rgba(var(--primary-blue-rgb), .25); /* Sombra suave no foco */
+        }
+        
+        /* Define uma variável RGB para o azul primário para usar no box-shadow */
+        :root {
+             --primary-blue-rgb: 42, 94, 138; /* RGB de #2A5E8A */
+        }
+
+        /* Estilo para o botão Entrar */
+        .btn-primary {
+            background-color: var(--primary-blue); /* Usa a cor primária do tema */
+            border-color: var(--primary-blue); /* Borda com a cor primária */
+            font-weight: 700;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Transição suave */
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark-blue); /* Cor mais escura no hover */
+            border-color: var(--primary-dark-blue); /* Borda mais escura no hover */
+            transform: translateY(-2px); /* Levantar um pouco no hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+        }
+         .btn-primary:active {
+            transform: translateY(0); /* Voltar ao normal ao clicar */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra menor ao clicar */
+         }
+
+         /* Estilos para animação (opcional, se precisar ajustar timing ou tipo) */
+         /* As classes animate__animated e animate__fadeInDown/Up já foram adicionadas no HTML */
+
+    </style>
+{% endblock %} 

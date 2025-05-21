@@ -22,23 +22,29 @@ class Aluno(models.Model):
         return self.nome
 
 class Mensalidade(models.Model):
+    STATUS_CHOICES = [
+        ('PENDENTE', 'Pendente'),
+        ('PAGO', 'Pago'),
+        ('ATRASADO', 'Atrasado'),
+    ]
+    
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     data_vencimento = models.DateField()
     valor = models.DecimalField(max_digits=6, decimal_places=2)
-    status = models.CharField(max_length=20, choices=[
-        ('PENDENTE', 'Pendente'),
-        ('PAGO', 'Pago'),
-        ('ATIVO', 'Ativo'),
-    ], default='ATIVO')
     data_pagamento = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')
     
     def __str__(self):
-        return f"Mensalidade de {self.aluno.nome} ({self.data_vencimento})"
+        return f"Mensalidade de {self.aluno.nome} - {self.data_vencimento}"
 
     def save(self, *args, **kwargs):
         if not self.valor:
             self.valor = 100.00 if self.aluno.bolsista else 150.00
         super().save(*args, **kwargs)
+
+    @property
+    def pago(self):
+        return self.status == 'PAGO'
 
 class Pagamento(models.Model):
     METODO_CHOICES = [

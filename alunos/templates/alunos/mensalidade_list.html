@@ -29,7 +29,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for mensalidade in mensalidades %}
+                        {% for item in mensalidades_com_status %}
+                        {% with mensalidade=item.mensalidade status_exibicao=item.status_exibicao %}
                         <tr>
                             <td>
                                 <strong>{{ mensalidade.aluno.nome }}</strong>
@@ -41,30 +42,29 @@
                             <td>{{ mensalidade.data_vencimento|date:"d/m/Y" }}</td>
                             <td>R$ {{ mensalidade.valor }}</td>
                             <td>
-                                {% if mensalidade.pago %}
-                                <span class="badge bg-success">Pago</span>
+                                {% if status_exibicao == 'PAGO' %}
+                                    <span class="badge bg-success">{{ status_exibicao }}</span>
+                                {% elif status_exibicao == 'ATRASADO' %}
+                                    <span class="badge bg-warning">{{ status_exibicao }}</span>
                                 {% else %}
-                                <span class="badge bg-danger">Pendente</span>
+                                    <span class="badge bg-danger">{{ status_exibicao }}</span> {# Deve ser PENDENTE #}
                                 {% endif %}
                             </td>
                             <td>
-                                {% if not mensalidade.pago %}
+                                {% if status_exibicao != 'PAGO' %}
                                 <a href="{% url 'registrar-pagamento' mensalidade.pk %}" class="btn btn-sm btn-success">
                                     <i class="fas fa-check"></i> Registrar Pagamento
                                 </a>
+                                {% endif %}
                                 <a href="{% url 'editar-mensalidade' mensalidade.pk %}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
                                 <a href="{% url 'excluir-mensalidade' mensalidade.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta mensalidade?');">
                                     <i class="fas fa-trash"></i> Excluir
                                 </a>
-                                {% else %}
-                                <span class="text-success">
-                                    <i class="fas fa-check-circle"></i> Pago
-                                </span>
-                                {% endif %}
                             </td>
                         </tr>
+                        {% endwith %}
                         {% empty %}
                         <tr>
                             <td colspan="5" class="text-center">Nenhuma mensalidade pendente encontrada.</td>

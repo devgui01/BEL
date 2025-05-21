@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('alunos.urls')),
+    path('alunos/', include('alunos.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('', RedirectView.as_view(url='/accounts/login/', permanent=False), name='index'),
 ]

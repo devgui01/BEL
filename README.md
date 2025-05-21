@@ -1,6 +1,6 @@
-# Sistema de Cadastro CT GOUVEIA Jiu-Jitsu
+# Sistema de Cadastro BASE ESCOLA DE LUTAS
 
-Este é um sistema simples para gerenciamento de alunos e mensalidades da academia CT GOUVEIA de Jiu-Jitsu.
+Este é um sistema simples para gerenciamento de alunos e mensalidades da BASE ESCOLA DE LUTAS.
 
 ## Funcionalidades
 - Cadastro de alunos

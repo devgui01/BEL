@@ -1,5 +1,6 @@
 from django import forms
 from .models import Aluno, Mensalidade
+from django.contrib.auth.forms import UserCreationForm
 
 class GerarMensalidadeForm(forms.ModelForm):
     aluno = forms.ModelChoiceField(
@@ -20,4 +21,17 @@ class GerarMensalidadeForm(forms.ModelForm):
 
     class Meta:
         model = Mensalidade
-        fields = ['aluno', 'valor', 'data_vencimento'] 
+        fields = ['aluno', 'valor', 'data_vencimento']
+
+class AlunoForm(forms.ModelForm):
+    class Meta:
+        model = Aluno
+        fields = ['nome', 'data_nascimento', 'telefone', 'email', 'endereco', 'faixa', 'bolsista']
+        widgets = {
+            'data_nascimento': forms.DateInput(attrs={'id': 'id_data_nascimento', 'class': 'form-control', 'type': 'text'}),
+            'telefone': forms.TextInput(attrs={'id': 'id_telefone', 'class': 'form-control'}),
+        }
+
+class SignUpForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        fields = UserCreationForm.Meta.fields + ("email",) 
