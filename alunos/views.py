@@ -6,10 +6,12 @@ from .models import Aluno, Mensalidade, Pagamento
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q, OuterRef, Subquery, Max, Case, When, Value, F, CharField
-from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm
+from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm, ProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 import calendar
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 
@@ -205,3 +207,42 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+@login_required
+def settings_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Configurações atualizadas com sucesso!')
+            return redirect('settings')
+    else:
+        form = ProfileForm(instance=request.user.profile)
+    
+    return render(request, 'alunos/settings.html', {'form': form})
+
+@login_required
+def update_theme(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            dark_mode = data.get('dark_mode', False)
+            request.user.profile.dark_mode = dark_mode
+            request.user.profile.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user.profile)
+    
+    return render(request, 'alunos/profile.html', {'form': form})

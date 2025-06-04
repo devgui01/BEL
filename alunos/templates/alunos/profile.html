@@ -1,0 +1,73 @@
+{% extends 'alunos/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Perfil{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user-circle"></i> Meu Perfil</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="profileForm">
+                        {% csrf_token %}
+                        <div class="text-center mb-4">
+                            <div class="position-relative d-inline-block">
+                                {% if user.profile.avatar %}
+                                    <img src="{{ user.profile.avatar.url }}" 
+                                         alt="Avatar" 
+                                         class="rounded-circle"
+                                         style="width: 150px; height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'default-avatar.png' %}" 
+                                         alt="Default Avatar" 
+                                         class="rounded-circle"
+                                         style="width: 150px; height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <label for="id_avatar" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2" style="cursor: pointer;">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input type="file" name="avatar" id="id_avatar" class="d-none" accept="image/*">
+                            </div>
+                        </div>
+                        {{ form|crispy }}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Avatar preview
+    const avatarInput = document.getElementById('id_avatar');
+    const avatarPreview = document.querySelector('.rounded-circle');
+    
+    avatarInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                avatarPreview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Phone mask
+    $('#id_telefone').mask('(00) 0 0000-0000');
+});
+</script>
+{% endblock %} 

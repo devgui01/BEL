@@ -93,16 +93,11 @@ if 'RENDER' in os.environ:
     # Outras configurações de produção podem ir aqui (STATIC_ROOT, etc.)
 
 else:
-    # Configuração para desenvolvimento local (usando SQL Server)
+    # Configuração para desenvolvimento local (usando SQLite)
     DATABASES = {
         'default': {
-            'ENGINE': 'mssql',
-            'NAME': 'CTGOUVEIAA',                          # Nome do seu banco de dados SQL Server
-            'HOST': 'localhost\\SQLEXPRESS01,62397',       # Endereço e porta dinâmica do servidor SQL Server local
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server', # Confirme o nome do driver instalado
-                'authentication': 'Windows',               # Use 'Windows' para autenticação Windows
-            },
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
     DEBUG = True
@@ -161,3 +156,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/alunos/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# Configuração para arquivos de mídia (uploads de usuários)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

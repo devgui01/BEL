@@ -17,8 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
-
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+from django.conf import settings # Importa settings
+from django.conf.urls.static import static # Importa static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,3 +26,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', RedirectView.as_view(url='/accounts/login/', permanent=False), name='index'),
 ]
+
+# Configuração para servir arquivos de mídia durante o desenvolvimento
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

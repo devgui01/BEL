@@ -1,5 +1,8 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Aluno(models.Model):
     nome = models.CharField(max_length=100)
@@ -62,3 +65,26 @@ class Pagamento(models.Model):
     
     def __str__(self):
         return f"Pagamento de {self.mensalidade.aluno.nome} - {self.data_pagamento}"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    nome_completo = models.CharField(max_length=100, blank=True)
+    telefone = models.CharField(max_length=20, blank=True)
+    endereco = models.CharField(max_length=200, blank=True)
+    dark_mode = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+# Signal to create/update user profile
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+    # For existing users, create a profile if it doesn't exist
+    else:
+        # This will get the profile if it exists, or create it if it doesn't
+        profile, created = UserProfile.objects.get_or_create(user=instance)
+        # If the profile already existed, you might want to save it here if you made other changes elsewhere
+        # profile.save()

@@ -11,4 +11,7 @@ urlpatterns = [
     path('mensalidades/excluir/<int:pk>/', views.excluir_mensalidade, name='excluir-mensalidade'),
     path('mensalidades/editar-mensalidade/<int:pk>/', views.editar_mensalidade, name='editar-mensalidade'),
     path('signup/', views.signup, name='signup'),
+    path('profile/', views.profile_view, name='profile'),
+    path('settings/', views.settings_view, name='settings'),
+    path('update-theme/', views.update_theme, name='update-theme'),
 ] 

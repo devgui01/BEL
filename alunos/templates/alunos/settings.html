@@ -1,0 +1,101 @@
+{% extends 'alunos/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- Configurações de Tema -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-palette"></i> Tema</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="themeSwitch" {% if user.is_authenticated and user.profile.dark_mode %}checked{% endif %}>
+                        <label class="form-check-label" for="themeSwitch">Modo Escuro</label>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" id="saveTheme">
+                            <i class="fas fa-save"></i> Salvar Preferências
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- A seção de Configurações de Perfil foi removida daqui. Agora ela está apenas na página /profile/ -->
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-check-input:checked {
+        background-color: var(--primary-blue);
+        border-color: var(--primary-blue);
+    }
+    
+    .form-check-input:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 0.25rem rgba(42, 94, 138, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Define a JS variable based on Django context
+    const isAuthenticated = "{{ user.is_authenticated|lower }}" === "true";
+
+    // Theme switching
+    const themeSwitch = document.getElementById('themeSwitch');
+    const saveTheme = document.getElementById('saveTheme');
+    
+    if (saveTheme) { // Check if the button exists
+        saveTheme.addEventListener('click', function() {
+            const isDarkMode = themeSwitch.checked;
+            
+            // Make sure user is authenticated before sending the request
+            if (isAuthenticated) {
+                 fetch('{% url "update-theme" %}', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                     },
+                     body: JSON.stringify({
+                         dark_mode: isDarkMode
+                     })
+                 })
+                 .then(response => response.json())
+                 .then(data => {
+                     if (data.success) {
+                         // Reload to apply theme immediately across the site
+                         location.reload();
+                     } else if (data.error) {
+                         console.error('Error updating theme:', data.error);
+                         // Optionally display an error message to the user
+                     }
+                 }).catch(error => {
+                      console.error('Fetch error:', error);
+                      // Optionally display a generic error message
+                 });
+            } else {
+                console.warn('User is not authenticated. Cannot save theme preference.');
+                // Optionally inform the user they need to be logged in
+            }
+        });
+    }
+
+    // Removed Avatar preview and Phone mask as they are now only on the profile page
+    // Keep only the theme related JS
+
+});
+</script>
+{% endblock %} 

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Aluno, Mensalidade
+from .models import Aluno, Mensalidade, UserProfile
 from django.contrib.auth.forms import UserCreationForm
 
 class GerarMensalidadeForm(forms.ModelForm):
@@ -37,4 +37,14 @@ class AlunoForm(forms.ModelForm):
 
 class SignUpForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        fields = UserCreationForm.Meta.fields + ("email",) 
+        fields = UserCreationForm.Meta.fields + ("email",)
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'nome_completo', 'telefone', 'endereco']
+        widgets = {
+            'telefone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(00) 0 0000-0000'}),
+            'endereco': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Endereço completo'}),
+            'nome_completo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome completo'}),
+        } 

@@ -3,8 +3,8 @@
 {% block title %}Lista de Alunos{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row mb-4">
+<div class="container-fluid d-flex flex-column h-100">
+    <div class="row mb-4 flex-shrink-0">
         <div class="col-md-8">
             <h1 class="h2">Lista de Alunos</h1>
         </div>
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Barra de Busca -->
-    <div class="card mb-4">
+    <div class="card mb-4 flex-shrink-0">
         <div class="card-body">
             <form method="get" class="row g-3">
                 <div class="col-md-8">
@@ -39,11 +39,11 @@
     </div>
 
     <!-- Lista de Alunos -->
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
+    <div class="card flex-grow-1 d-flex flex-column">
+        <div class="card-body p-0 d-flex flex-column">
+            <div class="table-responsive flex-grow-1" style="overflow-y: auto;">
+                <table class="table table-hover mb-0">
+                    <thead style="position: sticky; top: 0; background-color: var(--primary-blue); z-index: 1;">
                         <tr>
                             <th>Nome</th>
                             <th>Faixa</th>
@@ -112,4 +112,94 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    /* Estilo para o cabeçalho fixo da tabela */
+    .table-responsive thead th {
+        position: sticky;
+        top: 0;
+        background-color: var(--primary-blue);
+        color: white; /* Manter branco no cabeçalho para ambos os temas */
+        z-index: 1;
+        padding: 1rem;
+    }
+
+    /* Estilos para o corpo da tabela no modo claro */
+    .table tbody tr {
+        background-color: var(--card-bg); /* Usa o fundo do card definido em base.html */
+        color: var(--text-color); /* Usa a cor do texto definida em base.html */
+    }
+
+     .table tbody tr td {
+         color: var(--text-color); /* Garante que as células usem a cor do texto correta */
+     }
+
+    .table tbody tr:hover {
+        background-color: var(--light-grey); /* Cor de hover */
+    }
+
+     /* Estilos para o corpo da tabela no modo escuro */
+    [data-theme="dark"] .table tbody tr {
+        background-color: var(--dark-grey) !important; /* Fundo mais escuro para linhas no modo escuro, forçando a aplicação */
+        color: var(--text-color) !important; /* Usa a cor do texto clara definida em base.html, forçando a aplicação */
+    }
+
+     [data-theme="dark"] .table tbody tr td {
+         color: var(--text-color) !important; /* Garante que as células usem a cor do texto clara, forçando a aplicação */
+     }
+
+    [data-theme="dark"] .table tbody tr:hover {
+        background-color: var(--primary-dark-blue) !important; /* Cor de hover no modo escuro, forçando a aplicação */
+    }
+
+    
+    /* Ajuste para garantir que o cabeçalho fique visível durante a rolagem */
+    .table-responsive {
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-blue) var(--card-bg); /* Ajusta a cor da scrollbar */
+    }
+    
+    /* Estilização da barra de rolagem para Chrome/Safari */
+    .table-responsive::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: var(--card-bg); /* Ajusta a cor do track da scrollbar */
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background-color: var(--primary-blue);
+        border-radius: 4px;
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 768px) {
+        .table td, .table th {
+            padding: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+
+     /* Ajuste para o texto muted */
+     .text-muted {
+         color: var(--dark-grey) !important; /* Usa dark-grey no modo claro, forçando a aplicação */
+     }
+
+     [data-theme="dark"] .text-muted {
+         color: var(--light-grey) !important; /* Usa light-grey no modo escuro, forçando a aplicação */
+     }
+
+     /* Estilos de texto para os badges de faixa */
+     .badge.bg-preta { color: white !important; }
+     .badge.bg-marrom { color: #8B4513 !important; } /* Brown */
+     .badge.bg-roxa { color: #800080 !important; } /* Purple */
+     .badge.bg-azul { color: blue !important; }
+     .badge.bg-branca { color: #212529 !important; } /* Dark color for white belt */
+     .badge.bg-secondary { color: white !important; }
+
+</style>
 {% endblock %} 
