@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: ctgouveia
+    env: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ct_gouveia.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: RENDER
+        value: true
+    healthCheckPath: /admin/
+    autoDeploy: true
+
+  - type: pserv
+    name: ctgouveia-db
+    env: postgresql
+    plan: free
+    ipAllowList: []
+    volume:
+      name: ctgouveia-data
+      mountPath: /var/lib/postgresql/data
+      size: 1

@@ -52,16 +52,22 @@
                             </td>
                             <td>
                                 {% if status_exibicao != 'PAGO' %}
-                                <a href="{% url 'registrar-pagamento' mensalidade.pk %}" class="btn btn-sm btn-success">
-                                    <i class="fas fa-check"></i> Registrar Pagamento
-                                </a>
+                                <form method="post" action="{% url 'registrar-pagamento' mensalidade.pk %}" style="display: inline;" class="registrar-pagamento-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success registrar-pagamento-btn">
+                                        <i class="fas fa-check"></i> Registrar Pagamento
+                                    </button>
+                                </form>
                                 {% endif %}
                                 <a href="{% url 'editar-mensalidade' mensalidade.pk %}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <a href="{% url 'excluir-mensalidade' mensalidade.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta mensalidade?');">
-                                    <i class="fas fa-trash"></i> Excluir
-                                </a>
+                                <form method="post" action="{% url 'excluir-mensalidade' mensalidade.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta mensalidade?');">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% endwith %}
@@ -80,4 +86,27 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.registrar-pagamento-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            var button = this.querySelector('.registrar-pagamento-btn');
+            // Prevent double submission
+            if (button.disabled) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable button and show spinner on click
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            
+            // The form submission itself will handle the page load/redirect
+            // No need for explicit window.location.reload() or setTimeout here
+        });
+    });
+});
+</script>
 {% endblock %} 

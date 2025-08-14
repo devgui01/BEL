@@ -98,36 +98,40 @@ class MensalidadeListView(LoginRequiredMixin, ListView):
 
 @login_required
 def registrar_pagamento(request, pk):
-    mensalidade = get_object_or_404(Mensalidade, pk=pk)
-    if mensalidade.status != 'PAGO':
-        # Atualiza o status da mensalidade
-        mensalidade.status = 'PAGO'
-        mensalidade.data_pagamento = timezone.now()
-        mensalidade.save()
-        mensalidade.refresh_from_db()
-        
-        # Criar próxima mensalidade com vencimento um mês após a data do pagamento
-        data_pagamento_atual = mensalidade.data_pagamento
-        proxima_data = (data_pagamento_atual.replace(day=1) + timedelta(days=32)).replace(day=data_pagamento_atual.day)
-        
-        # Ajuste para meses com menos dias que o dia do pagamento
-        # Ex: pagar em 31/Jan, próxima seria 31/Fev (inválido). Ajustar para último dia do mês.
-        last_day_of_next_month = calendar.monthrange(proxima_data.year, proxima_data.month)[1]
-        if proxima_data.day > last_day_of_next_month:
-            proxima_data = proxima_data.replace(day=last_day_of_next_month)
+    if request.method == 'POST':
+        try:
+            mensalidade = get_object_or_404(Mensalidade, pk=pk)
+            if mensalidade.status != 'PAGO':
+                # Atualiza o status da mensalidade
+                mensalidade.status = 'PAGO'
+                mensalidade.data_pagamento = timezone.now()
+                mensalidade.save()
+                
+                # Criar próxima mensalidade com vencimento um mês após a data do pagamento
+                data_pagamento_atual = mensalidade.data_pagamento
+                proxima_data = (data_pagamento_atual.replace(day=1) + timedelta(days=32)).replace(day=data_pagamento_atual.day)
+                
+                # Ajuste para meses com menos dias que o dia do pagamento
+                last_day_of_next_month = calendar.monthrange(proxima_data.year, proxima_data.month)[1]
+                if proxima_data.day > last_day_of_next_month:
+                    proxima_data = proxima_data.replace(day=last_day_of_next_month)
 
-        Mensalidade.objects.create(
-            aluno=mensalidade.aluno,
-            data_vencimento=proxima_data,
-            valor=100.00 if mensalidade.aluno.bolsista else 150.00,
-            status='PENDENTE'
-        )
-        
-        messages.success(request, 'Pagamento registrado com sucesso! Nova mensalidade gerada.')
-        return redirect('mensalidade-list')
-    else:
-        messages.warning(request, 'Esta mensalidade já foi paga.')
-        return redirect('mensalidade-list')
+                Mensalidade.objects.create(
+                    aluno=mensalidade.aluno,
+                    data_vencimento=proxima_data,
+                    valor=100.00 if mensalidade.aluno.bolsista else 150.00,
+                    status='PENDENTE'
+                )
+                
+                messages.success(request, 'Pagamento registrado com sucesso! Nova mensalidade gerada.')
+                return redirect('mensalidade-list')
+            else:
+                messages.warning(request, 'Esta mensalidade já foi paga.')
+                return redirect('mensalidade-list')
+        except Exception as e:
+            messages.error(request, f'Erro ao registrar pagamento: {str(e)}')
+            return redirect('mensalidade-list')
+    return redirect('mensalidade-list')
 
 @login_required
 def gerar_mensalidades(request):
@@ -170,17 +174,15 @@ def gerar_mensalidades(request):
 
 @login_required
 def excluir_mensalidade(request, pk):
-    try:
-        mensalidade = Mensalidade.objects.get(id=pk)
-        # Opcional: Deletar pagamentos relacionados se houver (depende da regra de negócio)
-        # Pagamento.objects.filter(mensalidade=mensalidade).delete()
-        mensalidade.delete()
-        messages.success(request, 'Mensalidade excluída com sucesso!')
-    except Mensalidade.DoesNotExist:
-        messages.error(request, 'Mensalidade não encontrada.')
-    except Exception as e:
-        messages.error(request, f'Erro ao excluir mensalidade: {e}')
-
+    if request.method == 'POST':
+        try:
+            mensalidade = Mensalidade.objects.get(id=pk)
+            mensalidade.delete()
+            messages.success(request, 'Mensalidade excluída com sucesso!')
+        except Mensalidade.DoesNotExist:
+            messages.error(request, 'Mensalidade não encontrada.')
+        except Exception as e:
+            messages.error(request, f'Erro ao excluir mensalidade: {e}')
     return redirect('mensalidade-list')
 
 @login_required
