@@ -42,7 +42,7 @@ class SignUpForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['avatar', 'nome_completo', 'telefone', 'endereco']
+        fields = ['nome_completo', 'telefone', 'endereco']
         widgets = {
             'telefone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(00) 0 0000-0000'}),
             'endereco': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Endereço completo'}),
