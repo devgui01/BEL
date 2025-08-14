@@ -89,7 +89,7 @@ if 'RENDER' in os.environ:
         )
     }
     DEBUG = False
-    ALLOWED_HOSTS = ['ctgouveia.onrender.com', '.render.com'] # Permite o domínio específico e o wildcard do Render
+    ALLOWED_HOSTS = ['bel-oxap.onrender.com', '.render.com'] # Permite o domínio específico e o wildcard do Render
     # Outras configurações de produção podem ir aqui (STATIC_ROOT, etc.)
 
 else:
