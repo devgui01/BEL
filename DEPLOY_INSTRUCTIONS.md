@@ -14,12 +14,12 @@
 
 ### 2. No Dashboard do Render
 
-#### 2.1 Criar o Banco de Dados PostgreSQL
-1. Clique em **"New"** → **"PostgreSQL"**
-2. Nome: `ctgouveia-db`
-3. Plano: **Free**
-4. Clique em **"Create Database"**
-5. **IMPORTANTE**: Anote as credenciais do banco (serão mostradas apenas uma vez!)
+#### 2.1 Criar o Banco de Dados PostgreSQL ✅
+1. ✅ Clique em **"New"** → **"PostgreSQL"**
+2. ✅ Nome: `bel-db` (já criado!)
+3. ✅ Plano: **Free**
+4. ✅ Clique em **"Create Database"**
+5. ✅ **IMPORTANTE**: Anote as credenciais do banco (serão mostradas apenas uma vez!)
 
 #### 2.2 Criar o Serviço Web
 1. Clique em **"New"** → **"Web Service"**

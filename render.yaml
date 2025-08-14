@@ -18,11 +18,11 @@ services:
     autoDeploy: true
 
   - type: pserv
-    name: ctgouveia-db
+    name: bel-db
     env: postgresql
     plan: free
     ipAllowList: []
     volume:
-      name: ctgouveia-data
+      name: bel-data
       mountPath: /var/lib/postgresql/data
       size: 1
