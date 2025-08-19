@@ -110,19 +110,6 @@ def registrar_pagamento(request, pk):
                     mensalidade.data_pagamento = timezone.localdate()
                     mensalidade.save()
 
-                    data_pagamento_atual = mensalidade.data_pagamento
-                    proxima_data = (data_pagamento_atual.replace(day=1) + timedelta(days=32)).replace(day=data_pagamento_atual.day)
-                    last_day_of_next_month = calendar.monthrange(proxima_data.year, proxima_data.month)[1]
-                    if proxima_data.day > last_day_of_next_month:
-                        proxima_data = proxima_data.replace(day=last_day_of_next_month)
-
-                    Mensalidade.objects.create(
-                        aluno=mensalidade.aluno,
-                        data_vencimento=proxima_data,
-                        valor=100.00 if mensalidade.aluno.bolsista else 150.00,
-                        status='PENDENTE'
-                    )
-
                 messages.success(request, 'Pagamento registrado com sucesso!')
                 return redirect('mensalidade-list')
             else:
@@ -183,7 +170,7 @@ def gerar_mensalidades(request):
 def excluir_mensalidade(request, pk):
     if request.method == 'POST':
         try:
-            mensalidade = Mensalidade.objects.get(id=pk, aluno__owner=request.user)
+            mensalidade = Mensalidade.objects.select_for_update().get(id=pk, aluno__owner=request.user)
             mensalidade.delete()
             messages.success(request, 'Mensalidade excluída com sucesso!')
         except Mensalidade.DoesNotExist:
