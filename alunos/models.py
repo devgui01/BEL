@@ -11,7 +11,22 @@ class Aluno(models.Model):
     email = models.EmailField(blank=True, null=True)
     endereco = models.CharField(max_length=200)
     data_cadastro = models.DateField(auto_now_add=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='alunos', null=True, blank=True)
     faixa = models.CharField(max_length=20, choices=[
+        # Faixas infantis (BJJ Kids)
+        ('CINZA_BRANCA', 'Cinza e Branca'),
+        ('CINZA', 'Cinza'),
+        ('CINZA_PRETA', 'Cinza e Preta'),
+        ('AMARELA_BRANCA', 'Amarela e Branca'),
+        ('AMARELA', 'Amarela'),
+        ('AMARELA_PRETA', 'Amarela e Preta'),
+        ('LARANJA_BRANCA', 'Laranja e Branca'),
+        ('LARANJA', 'Laranja'),
+        ('LARANJA_PRETA', 'Laranja e Preta'),
+        ('VERDE_BRANCA', 'Verde e Branca'),
+        ('VERDE', 'Verde'),
+        ('VERDE_PRETA', 'Verde e Preta'),
+        # Faixas adultas
         ('BRANCA', 'Branca'),
         ('AZUL', 'Azul'),
         ('ROXA', 'Roxa'),

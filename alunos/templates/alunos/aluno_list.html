@@ -63,7 +63,7 @@
                                 <small class="text-muted">Cadastro: {{ aluno.data_cadastro|date:"d/m/Y" }}</small>
                             </td>
                             <td>
-                                <span class="badge {% if aluno.faixa == 'PRETA' %}bg-preta{% elif aluno.faixa == 'MARROM' %}bg-marrom{% elif aluno.faixa == 'ROXA' %}bg-roxa{% elif aluno.faixa == 'AZUL' %}bg-azul{% elif aluno.faixa == 'BRANCA' %}bg-branca{% else %}bg-secondary{% endif %}">
+                                <span class="badge {% if aluno.faixa == 'PRETA' %}bg-preta{% elif aluno.faixa == 'MARROM' %}bg-marrom{% elif aluno.faixa == 'ROXA' %}bg-roxa{% elif aluno.faixa == 'AZUL' %}bg-azul{% elif aluno.faixa == 'BRANCA' %}bg-branca{% elif aluno.faixa == 'CINZA' or aluno.faixa == 'CINZA_BRANCA' or aluno.faixa == 'CINZA_PRETA' %}bg-cinza{% elif aluno.faixa == 'AMARELA' or aluno.faixa == 'AMARELA_BRANCA' or aluno.faixa == 'AMARELA_PRETA' %}bg-amarela{% elif aluno.faixa == 'LARANJA' or aluno.faixa == 'LARANJA_BRANCA' or aluno.faixa == 'LARANJA_PRETA' %}bg-laranja{% elif aluno.faixa == 'VERDE' or aluno.faixa == 'VERDE_BRANCA' or aluno.faixa == 'VERDE_PRETA' %}bg-verde{% else %}bg-secondary{% endif %}">
                                     {{ aluno.get_faixa_display }}
                                 </span>
                             </td>
@@ -195,10 +195,14 @@
 
      /* Estilos de texto para os badges de faixa */
      .badge.bg-preta { color: white !important; }
-     .badge.bg-marrom { color: #8B4513 !important; } /* Brown */
-     .badge.bg-roxa { color: #800080 !important; } /* Purple */
-     .badge.bg-azul { color: blue !important; }
-     .badge.bg-branca { color: #212529 !important; } /* Dark color for white belt */
+     .badge.bg-marrom { color: #8B4513 !important; }
+     .badge.bg-roxa { color: #800080 !important; }
+     .badge.bg-azul { color: #0d6efd !important; }
+     .badge.bg-branca { color: #212529 !important; }
+     .badge.bg-cinza { color: #6c757d !important; }
+     .badge.bg-amarela { color: #ffc107 !important; }
+     .badge.bg-laranja { color: #fd7e14 !important; }
+     .badge.bg-verde { color: #198754 !important; }
      .badge.bg-secondary { color: white !important; }
 
 </style>

@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 class GerarMensalidadeForm(forms.ModelForm):
     aluno = forms.ModelChoiceField(
-        queryset=Aluno.objects.filter(ativo=True),
+        queryset=Aluno.objects.none(),
         label="Aluno",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
@@ -23,10 +23,17 @@ class GerarMensalidadeForm(forms.ModelForm):
         model = Mensalidade
         fields = ['aluno', 'valor', 'data_vencimento']
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user is not None:
+            self.fields['aluno'].queryset = Aluno.objects.filter(ativo=True, owner=user)
+        else:
+            self.fields['aluno'].queryset = Aluno.objects.filter(ativo=True)
+
 class AlunoForm(forms.ModelForm):
     class Meta:
         model = Aluno
-        fields = '__all__'
+        exclude = ['owner']
         # Personaliza a mensagem de erro para datas inválidas
         error_messages = {
             'data_nascimento': {

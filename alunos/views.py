@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 import calendar
 from django.http import JsonResponse
 import json
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -21,7 +22,7 @@ class AlunoListView(LoginRequiredMixin, ListView):
     context_object_name = 'alunos'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(owner=self.request.user)
         search_query = self.request.GET.get('search', '')
         if search_query:
             queryset = queryset.filter(
@@ -43,6 +44,7 @@ class AlunoCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('aluno-list')
 
     def form_valid(self, form):
+        form.instance.owner = self.request.user
         messages.success(self.request, 'Aluno cadastrado com sucesso!')
         return super().form_valid(form)
 
@@ -51,6 +53,9 @@ class AlunoUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'alunos/aluno_form.html'
     form_class = AlunoForm
     success_url = reverse_lazy('aluno-list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(owner=self.request.user)
 
     def form_valid(self, form):
         messages.success(self.request, 'Dados do aluno atualizados com sucesso!')
@@ -64,7 +69,7 @@ class MensalidadeListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         # Buscar todas as mensalidades ativas (não excluídas)
         # Como não temos um campo de exclusão lógica, buscar todas e filtrar no context
-        return Mensalidade.objects.all().order_by('aluno', '-data_vencimento') # Ordena por aluno e data decrescente
+        return Mensalidade.objects.filter(aluno__owner=self.request.user).order_by('aluno', '-data_vencimento') # Ordena por aluno e data decrescente
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -100,7 +105,7 @@ class MensalidadeListView(LoginRequiredMixin, ListView):
 def registrar_pagamento(request, pk):
     if request.method == 'POST':
         try:
-            mensalidade = get_object_or_404(Mensalidade, pk=pk)
+            mensalidade = get_object_or_404(Mensalidade, pk=pk, aluno__owner=request.user)
             if mensalidade.status != 'PAGO':
                 # Atualiza o status da mensalidade
                 mensalidade.status = 'PAGO'
@@ -136,7 +141,7 @@ def registrar_pagamento(request, pk):
 @login_required
 def gerar_mensalidades(request):
     if request.method == 'POST':
-        alunos_ativos = Aluno.objects.filter(ativo=True)
+        alunos_ativos = Aluno.objects.filter(ativo=True, owner=request.user)
         hoje = timezone.now().date()
         # A data de vencimento para a nova mensalidade será o primeiro dia do próximo mês a partir de hoje
         primeiro_dia_proximo_mes = (hoje.replace(day=1) + timedelta(days=32)).replace(day=1)
@@ -170,13 +175,14 @@ def gerar_mensalidades(request):
 
     else:
         # Se for um GET request, apenas exibe o template do botão ou formulário se houver
-        return render(request, 'alunos/gerar_mensalidade.html', {}) 
+        form = GerarMensalidadeForm(user=request.user)
+        return render(request, 'alunos/gerar_mensalidade.html', { 'form': form }) 
 
 @login_required
 def excluir_mensalidade(request, pk):
     if request.method == 'POST':
         try:
-            mensalidade = Mensalidade.objects.get(id=pk)
+            mensalidade = Mensalidade.objects.get(id=pk, aluno__owner=request.user)
             mensalidade.delete()
             messages.success(request, 'Mensalidade excluída com sucesso!')
         except Mensalidade.DoesNotExist:
@@ -187,15 +193,15 @@ def excluir_mensalidade(request, pk):
 
 @login_required
 def editar_mensalidade(request, pk):
-    mensalidade = get_object_or_404(Mensalidade, pk=pk)
+    mensalidade = get_object_or_404(Mensalidade, pk=pk, aluno__owner=request.user)
     if request.method == 'POST':
-        form = GerarMensalidadeForm(request.POST, instance=mensalidade)
+        form = GerarMensalidadeForm(request.POST, instance=mensalidade, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, 'Mensalidade alterada com sucesso!')
             return redirect('mensalidade-list')
     else:
-        form = GerarMensalidadeForm(instance=mensalidade)
+        form = GerarMensalidadeForm(instance=mensalidade, user=request.user)
     return render(request, 'alunos/gerar_mensalidade.html', {'form': form, 'editar': True})
 
 # View para registro de novos usuários do sistema
