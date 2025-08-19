@@ -87,20 +87,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   (function() {
-    // Dados agregados por dia no mês
-    const pagamentos = [
-      {% for m in mensalidades_pagas %}
-        { dia: new Date("{{ m.data_pagamento|date:'Y-m-d' }}"), valor: {{ m.valor }} },
-      {% endfor %}
-    ];
-    // Construir série por dia (1..ultimo dia)
-    const ultimoDia = {{ fim|date:'d' }};
-    const labels = Array.from({length: ultimoDia}, (_, i) => i + 1);
-    const valores = Array(ultimoDia).fill(0);
-    pagamentos.forEach(p => {
-      const d = p.dia.getDate();
-      valores[d-1] += parseFloat(p.valor);
-    });
+    const labels = {{ chart_labels|safe }};
+    const valores = {{ chart_values|safe }};
     const ctx = document.getElementById('chartReceita');
     if (ctx) {
       new Chart(ctx, {
@@ -117,9 +105,7 @@
           }]
         },
         options: {
-          scales: {
-            y: { beginAtZero: true }
-          }
+          scales: { y: { beginAtZero: true } }
         }
       });
     }

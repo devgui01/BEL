@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from .models import Aluno, Mensalidade, Pagamento
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Q, OuterRef, Subquery, Max, Case, When, Value, F, CharField
+from django.db.models import Q, OuterRef, Subquery, Max, Case, When, Value, F, CharField, Count
 from django.db import transaction
 from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm, ProfileForm, PresencaForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -279,6 +279,14 @@ def relatorio_mensal(request):
     total_receita = sum((m.valor for m in mensalidades_pagas), Decimal('0'))
     quantidade = mensalidades_pagas.count()
 
+    # Série por dia para o gráfico (construída no servidor para evitar problemas de locale/parse)
+    ultimo_dia = ultimo_dia = calendar.monthrange(ano, mes)[1]
+    chart_labels = list(range(1, ultimo_dia + 1))
+    chart_values = [0 for _ in chart_labels]
+    for m in mensalidades_pagas:
+        if m.data_pagamento:
+            chart_values[m.data_pagamento.day - 1] += float(m.valor)
+
     meses_pt = [
         '', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -296,6 +304,8 @@ def relatorio_mensal(request):
         'quantidade': quantidade,
         'meses': meses,
         'anos': anos,
+        'chart_labels': chart_labels,
+        'chart_values': chart_values,
     }
     return render(request, 'alunos/relatorio.html', context)
 
@@ -320,4 +330,20 @@ def presencas_view(request):
     # últimas 30 presenças do usuário
     from .models import Presenca
     presencas = Presenca.objects.filter(aluno__owner=request.user).select_related('aluno').order_by('-data', 'aluno__nome')[:30]
-    return render(request, 'alunos/presencas.html', { 'form': form, 'presencas': presencas })
+
+    # Ranking do mês atual (mais frequentes)
+    hoje = timezone.localdate()
+    inicio = hoje.replace(day=1)
+    fim_dia = calendar.monthrange(hoje.year, hoje.month)[1]
+    fim = hoje.replace(day=fim_dia)
+    ranking_qs = (
+        Presenca.objects
+        .filter(aluno__owner=request.user, presente=True, data__gte=inicio, data__lte=fim)
+        .values('aluno__nome')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:10]
+    )
+    rank_labels = [r['aluno__nome'] for r in ranking_qs]
+    rank_values = [r['total'] for r in ranking_qs]
+
+    return render(request, 'alunos/presencas.html', { 'form': form, 'presencas': presencas, 'rank_labels': rank_labels, 'rank_values': rank_values })

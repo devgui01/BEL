@@ -67,7 +67,41 @@
       </div>
     </div>
   </div>
+  
+  <div class="card mt-4">
+    <div class="card-body">
+      <h5 class="card-title">Ranking de frequência (mês atual)</h5>
+      <canvas id="chartRanking" height="120"></canvas>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function() {
+    const labels = {{ rank_labels|default:'[]'|safe }};
+    const valores = {{ rank_values|default:'[]'|safe }};
+    const ctx = document.getElementById('chartRanking');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Presenças no mês',
+            data: valores,
+            backgroundColor: 'rgba(33, 136, 56, 0.5)',
+            borderColor: '#218838'
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}
