@@ -6,6 +6,7 @@ from .models import Aluno, Mensalidade, Pagamento
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q, OuterRef, Subquery, Max, Case, When, Value, F, CharField
+from django.db import transaction
 from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm, ProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -73,32 +74,29 @@ class MensalidadeListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Processar mensalidades para obter a mais recente por aluno
+        hoje = timezone.localdate()
         mensalidades_por_aluno = {}
-        for mensalidade in context['mensalidades']:
-            # Usa a ordenação para garantir que a primeira encontrada para um aluno seja a mais recente
-            if mensalidade.aluno not in mensalidades_por_aluno:
-                # Determinar o status para exibição (incluindo atrasado)
-                status_exibicao = mensalidade.status
-                if status_exibicao == 'PENDENTE' and mensalidade.data_vencimento < timezone.now().date():
-                     status_exibicao = 'ATRASADO'
-                
-                # Adicionar a mensalidade mais recente e seu status de exibição
-                mensalidades_por_aluno[mensalidade.aluno] = {
-                    'mensalidade': mensalidade,
+        ultima_por_aluno = {}
+        for m in context['mensalidades']:
+            ultima_por_aluno[m.aluno] = m
+            if m.data_vencimento <= hoje and m.aluno not in mensalidades_por_aluno:
+                status_exibicao = m.status
+                if status_exibicao == 'PENDENTE' and m.data_vencimento < hoje:
+                    status_exibicao = 'ATRASADO'
+                mensalidades_por_aluno[m.aluno] = {
+                    'mensalidade': m,
                     'status_exibicao': status_exibicao
                 }
 
-        # Passar apenas as mensalidades mais recentes para o template
-        # Converter de volta para uma lista de objetos Mensalidade (ou dicionários)
+        for aluno, m in ultima_por_aluno.items():
+            if aluno not in mensalidades_por_aluno:
+                mensalidades_por_aluno[aluno] = {
+                    'mensalidade': m,
+                    'status_exibicao': m.status
+                }
+
         context['mensalidades'] = [item['mensalidade'] for item in mensalidades_por_aluno.values()]
-        # Passar também o status de exibição associado
         context['mensalidades_com_status'] = mensalidades_por_aluno.values()
-
-        # Manter search query se necessário, embora não esteja na lista de mensalidades por aluno
-        # context['search_query'] = self.request.GET.get('search', '') # Remover se não for usar busca aqui
-
         return context
 
 @login_required
@@ -107,28 +105,25 @@ def registrar_pagamento(request, pk):
         try:
             mensalidade = get_object_or_404(Mensalidade, pk=pk, aluno__owner=request.user)
             if mensalidade.status != 'PAGO':
-                # Atualiza o status da mensalidade
-                mensalidade.status = 'PAGO'
-                mensalidade.data_pagamento = timezone.now()
-                mensalidade.save()
-                
-                # Criar próxima mensalidade com vencimento um mês após a data do pagamento
-                data_pagamento_atual = mensalidade.data_pagamento
-                proxima_data = (data_pagamento_atual.replace(day=1) + timedelta(days=32)).replace(day=data_pagamento_atual.day)
-                
-                # Ajuste para meses com menos dias que o dia do pagamento
-                last_day_of_next_month = calendar.monthrange(proxima_data.year, proxima_data.month)[1]
-                if proxima_data.day > last_day_of_next_month:
-                    proxima_data = proxima_data.replace(day=last_day_of_next_month)
+                with transaction.atomic():
+                    mensalidade.status = 'PAGO'
+                    mensalidade.data_pagamento = timezone.localdate()
+                    mensalidade.save()
 
-                Mensalidade.objects.create(
-                    aluno=mensalidade.aluno,
-                    data_vencimento=proxima_data,
-                    valor=100.00 if mensalidade.aluno.bolsista else 150.00,
-                    status='PENDENTE'
-                )
-                
-                messages.success(request, 'Pagamento registrado com sucesso! Nova mensalidade gerada.')
+                    data_pagamento_atual = mensalidade.data_pagamento
+                    proxima_data = (data_pagamento_atual.replace(day=1) + timedelta(days=32)).replace(day=data_pagamento_atual.day)
+                    last_day_of_next_month = calendar.monthrange(proxima_data.year, proxima_data.month)[1]
+                    if proxima_data.day > last_day_of_next_month:
+                        proxima_data = proxima_data.replace(day=last_day_of_next_month)
+
+                    Mensalidade.objects.create(
+                        aluno=mensalidade.aluno,
+                        data_vencimento=proxima_data,
+                        valor=100.00 if mensalidade.aluno.bolsista else 150.00,
+                        status='PENDENTE'
+                    )
+
+                messages.success(request, 'Pagamento registrado com sucesso!')
                 return redirect('mensalidade-list')
             else:
                 messages.warning(request, 'Esta mensalidade já foi paga.')
@@ -141,14 +136,23 @@ def registrar_pagamento(request, pk):
 @login_required
 def gerar_mensalidades(request):
     if request.method == 'POST':
+        # POST do formulário manual
+        if 'aluno' in request.POST:
+            form = GerarMensalidadeForm(request.POST, user=request.user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Mensalidade criada com sucesso!')
+                return redirect('mensalidade-list')
+            else:
+                return render(request, 'alunos/gerar_mensalidade.html', {'form': form})
+
+        # Geração em massa
         alunos_ativos = Aluno.objects.filter(ativo=True, owner=request.user)
-        hoje = timezone.now().date()
-        # A data de vencimento para a nova mensalidade será o primeiro dia do próximo mês a partir de hoje
+        hoje = timezone.localdate()
         primeiro_dia_proximo_mes = (hoje.replace(day=1) + timedelta(days=32)).replace(day=1)
 
         mensalidades_geradas_count = 0
         for aluno in alunos_ativos:
-            # Verifica se já existe uma mensalidade PENDENTE para este aluno (não apenas para o próximo mês)
             mensalidade_pendente_existente = Mensalidade.objects.filter(
                 aluno=aluno,
                 status='PENDENTE'
@@ -157,19 +161,16 @@ def gerar_mensalidades(request):
             if not mensalidade_pendente_existente:
                 Mensalidade.objects.create(
                     aluno=aluno,
-                    data_vencimento=primeiro_dia_proximo_mes, # Nova mensalidade vence no início do próximo mês
+                    data_vencimento=primeiro_dia_proximo_mes,
                     valor=100.00 if aluno.bolsista else 150.00,
                     status='PENDENTE'
                 )
                 mensalidades_geradas_count += 1
-            # else:
-                # Poderíamos adicionar uma mensagem aqui por aluno, mas pode gerar muitas mensagens.
-                # messages.info(request, f'Aluno {aluno.nome} já possui mensalidade pendente.')
 
         if mensalidades_geradas_count > 0:
-             messages.success(request, f'{mensalidades_geradas_count} mensalidade(s) gerada(s) com sucesso para alunos ativos sem pendências!')
+            messages.success(request, f'{mensalidades_geradas_count} mensalidade(s) gerada(s) com sucesso para alunos ativos sem pendências!')
         else:
-             messages.info(request, 'Nenhuma mensalidade nova gerada. Todos os alunos ativos já possuem mensalidade pendente.')
+            messages.info(request, 'Nenhuma mensalidade nova gerada. Todos os alunos ativos já possuem mensalidade pendente.')
 
         return redirect('mensalidade-list')
 

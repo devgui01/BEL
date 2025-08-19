@@ -16,7 +16,8 @@ class GerarMensalidadeForm(forms.ModelForm):
     )
     data_vencimento = forms.DateField(
         label="Data de Vencimento",
-        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        input_formats=["%Y-%m-%d", "%d/%m/%Y"],
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format="%Y-%m-%d")
     )
 
     class Meta:
