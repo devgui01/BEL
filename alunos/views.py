@@ -171,8 +171,9 @@ def gerar_mensalidades(request):
 def excluir_mensalidade(request, pk):
     if request.method == 'POST':
         try:
-            mensalidade = Mensalidade.objects.select_for_update().get(id=pk, aluno__owner=request.user)
-            mensalidade.delete()
+            with transaction.atomic():
+                mensalidade = get_object_or_404(Mensalidade, id=pk, aluno__owner=request.user)
+                mensalidade.delete()
             messages.success(request, 'Mensalidade excluída com sucesso!')
         except Mensalidade.DoesNotExist:
             messages.error(request, 'Mensalidade não encontrada.')
