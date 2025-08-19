@@ -20,12 +20,18 @@
         <div class="col-auto">
           <label class="form-label">Mês</label>
           <select name="mes" class="form-select">
-            {% for m in 1|make_list:12 %}{% endfor %}
+            {% for item in meses %}
+            <option value="{{ item.num }}" {% if item.num == mes %}selected{% endif %}>{{ item.nome }}</option>
+            {% endfor %}
           </select>
         </div>
         <div class="col-auto">
           <label class="form-label">Ano</label>
-          <input type="number" name="ano" class="form-control" value="{{ ano }}">
+          <select name="ano" class="form-select">
+            {% for y in anos %}
+            <option value="{{ y }}" {% if y == ano %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
         </div>
         <div class="col-auto align-self-end">
           <button type="submit" class="btn btn-success">Filtrar</button>

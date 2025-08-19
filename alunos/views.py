@@ -278,6 +278,13 @@ def relatorio_mensal(request):
     total_receita = sum((m.valor for m in mensalidades_pagas), Decimal('0'))
     quantidade = mensalidades_pagas.count()
 
+    meses_pt = [
+        '', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ]
+    meses = [{ 'num': i, 'nome': meses_pt[i] } for i in range(1, 12+1)]
+    anos = list(range(hoje.year - 5, hoje.year + 1))
+
     context = {
         'mes': mes,
         'ano': ano,
@@ -286,5 +293,7 @@ def relatorio_mensal(request):
         'mensalidades_pagas': mensalidades_pagas,
         'total_receita': total_receita,
         'quantidade': quantidade,
+        'meses': meses,
+        'anos': anos,
     }
     return render(request, 'alunos/relatorio.html', context)
