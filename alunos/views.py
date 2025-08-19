@@ -14,6 +14,7 @@ import calendar
 from django.http import JsonResponse
 import json
 from django.contrib.auth.decorators import login_required
+from decimal import Decimal
 
 # Create your views here.
 
@@ -242,3 +243,48 @@ def profile_view(request):
         form = ProfileForm(instance=request.user.profile)
     
     return render(request, 'alunos/profile.html', {'form': form})
+
+@login_required
+def relatorio_mensal(request):
+    """Relatório A4 imprimível de receitas do mês por mensalidades pagas."""
+    # Determina mês/ano selecionados (padrão: mês atual em timezone local)
+    hoje = timezone.localdate()
+    try:
+        mes = int(request.GET.get('mes', hoje.month))
+        ano = int(request.GET.get('ano', hoje.year))
+    except ValueError:
+        mes, ano = hoje.month, hoje.year
+
+    # Início e fim do mês
+    inicio = hoje.replace(year=ano, month=mes, day=1)
+    # calcula último dia do mês
+    ultimo_dia = calendar.monthrange(ano, mes)[1]
+    fim = hoje.replace(year=ano, month=mes, day=ultimo_dia)
+
+    # Filtra mensalidades pagas do usuário no período
+    mensalidades_pagas = (
+        Mensalidade.objects
+        .filter(
+            aluno__owner=request.user,
+            status='PAGO',
+            data_pagamento__isnull=False,
+            data_pagamento__gte=inicio,
+            data_pagamento__lte=fim,
+        )
+        .select_related('aluno')
+        .order_by('data_pagamento')
+    )
+
+    total_receita = sum((m.valor for m in mensalidades_pagas), Decimal('0'))
+    quantidade = mensalidades_pagas.count()
+
+    context = {
+        'mes': mes,
+        'ano': ano,
+        'inicio': inicio,
+        'fim': fim,
+        'mensalidades_pagas': mensalidades_pagas,
+        'total_receita': total_receita,
+        'quantidade': quantidade,
+    }
+    return render(request, 'alunos/relatorio.html', context)

@@ -1,0 +1,78 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Relatório Mensal{% endblock %}
+
+{% block content %}
+<div class="container my-3">
+  <div class="d-print-none d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 mb-0">Relatório de Receitas do Mês</h2>
+    <div>
+      <a class="btn btn-outline-secondary" href="?mes={{ mes }}&ano={{ ano }}">Atualizar</a>
+      <button class="btn btn-primary" onclick="window.print()">
+        <i class="fas fa-print"></i> Imprimir
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form class="row g-2 d-print-none" method="get">
+        <div class="col-auto">
+          <label class="form-label">Mês</label>
+          <select name="mes" class="form-select">
+            {% for m in 1|make_list:12 %}{% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <label class="form-label">Ano</label>
+          <input type="number" name="ano" class="form-control" value="{{ ano }}">
+        </div>
+        <div class="col-auto align-self-end">
+          <button type="submit" class="btn btn-success">Filtrar</button>
+        </div>
+      </form>
+
+      <div class="mt-3">
+        <p><strong>Período:</strong> {{ inicio|date:"d/m/Y" }} a {{ fim|date:"d/m/Y" }}</p>
+        <p><strong>Mensalidades pagas:</strong> {{ quantidade }}</p>
+        <p><strong>Total recebido:</strong> R$ {{ total_receita }}</p>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Data Pagamento</th>
+              <th>Aluno</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in mensalidades_pagas %}
+            <tr>
+              <td>{{ m.data_pagamento|date:"d/m/Y" }}</td>
+              <td>{{ m.aluno.nome }}</td>
+              <td>R$ {{ m.valor }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center">Sem pagamentos no período.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media print {
+    nav, .d-print-none, .btn, .alert { display: none !important; }
+    .card { border: none; }
+    body { background: white; }
+  }
+</style>
+{% endblock %}
+
+
