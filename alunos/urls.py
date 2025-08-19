@@ -15,4 +15,5 @@ urlpatterns = [
     path('settings/', views.settings_view, name='settings'),
     path('update-theme/', views.update_theme, name='update-theme'),
     path('relatorios/mensal/', views.relatorio_mensal, name='relatorio-mensal'),
+    path('presencas/', views.presencas_view, name='presencas'),
 ] 

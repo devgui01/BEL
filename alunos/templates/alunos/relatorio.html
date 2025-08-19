@@ -68,6 +68,10 @@
           </tbody>
         </table>
       </div>
+
+      <hr class="my-4">
+      <h5>Evolução de Receita (mês atual)</h5>
+      <canvas id="chartReceita" height="120"></canvas>
     </div>
   </div>
 </div>
@@ -79,6 +83,49 @@
     body { background: white; }
   }
 </style>
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function() {
+    // Dados agregados por dia no mês
+    const pagamentos = [
+      {% for m in mensalidades_pagas %}
+        { dia: new Date("{{ m.data_pagamento|date:'Y-m-d' }}"), valor: {{ m.valor }} },
+      {% endfor %}
+    ];
+    // Construir série por dia (1..ultimo dia)
+    const ultimoDia = {{ fim|date:'d' }};
+    const labels = Array.from({length: ultimoDia}, (_, i) => i + 1);
+    const valores = Array(ultimoDia).fill(0);
+    pagamentos.forEach(p => {
+      const d = p.dia.getDate();
+      valores[d-1] += parseFloat(p.valor);
+    });
+    const ctx = document.getElementById('chartReceita');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Receita por dia (R$)',
+            data: valores,
+            borderColor: '#2A5E8A',
+            backgroundColor: 'rgba(42, 94, 138, 0.2)',
+            tension: 0.2,
+            fill: true
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+  })();
+  </script>
+{% endblock %}
 {% endblock %}
 
 

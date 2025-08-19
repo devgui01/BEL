@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q, OuterRef, Subquery, Max, Case, When, Value, F, CharField
 from django.db import transaction
-from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm, ProfileForm
+from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm, ProfileForm, PresencaForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 import calendar
@@ -298,3 +298,26 @@ def relatorio_mensal(request):
         'anos': anos,
     }
     return render(request, 'alunos/relatorio.html', context)
+
+@login_required
+def presencas_view(request):
+    """Página simples para registrar presenças por dia e ver lista recente."""
+    if request.method == 'POST':
+        form = PresencaForm(request.POST)
+        if form.is_valid():
+            # restringe alunos ao owner logado
+            aluno = form.cleaned_data['aluno']
+            if aluno.owner != request.user:
+                messages.error(request, 'Aluno inválido.')
+            else:
+                form.save()
+                messages.success(request, 'Presença registrada!')
+                return redirect('presencas')
+    else:
+        form = PresencaForm()
+        form.fields['aluno'].queryset = Aluno.objects.filter(owner=request.user, ativo=True).order_by('nome')
+
+    # últimas 30 presenças do usuário
+    from .models import Presenca
+    presencas = Presenca.objects.filter(aluno__owner=request.user).select_related('aluno').order_by('-data', 'aluno__nome')[:30]
+    return render(request, 'alunos/presencas.html', { 'form': form, 'presencas': presencas })

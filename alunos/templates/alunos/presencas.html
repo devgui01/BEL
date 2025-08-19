@@ -1,0 +1,73 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Presenças{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-3">
+    <div class="col">
+      <h2 class="h4">Marcar Presença</h2>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="post" class="row g-3">
+        {% csrf_token %}
+        <div class="col-md-5">
+          {{ form.aluno.label_tag }}
+          {{ form.aluno }}
+        </div>
+        <div class="col-md-3">
+          {{ form.data.label_tag }}
+          {{ form.data }}
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <div class="form-check">
+            {{ form.presente }}
+            <label class="form-check-label">Presente</label>
+          </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Últimas presenças</h5>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Aluno</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in presencas %}
+            <tr>
+              <td>{{ p.data|date:"d/m/Y" }}</td>
+              <td>{{ p.aluno.nome }}</td>
+              <td>
+                {% if p.presente %}
+                <span class="badge bg-success">Presente</span>
+                {% else %}
+                <span class="badge bg-danger">Ausente</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center">Sem registros.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

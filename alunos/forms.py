@@ -1,5 +1,6 @@
 from django import forms
 from .models import Aluno, Mensalidade, UserProfile
+from .models import Presenca
 from django.contrib.auth.forms import UserCreationForm
 
 class GerarMensalidadeForm(forms.ModelForm):
@@ -56,3 +57,18 @@ class ProfileForm(forms.ModelForm):
             'endereco': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Endereço completo'}),
             'nome_completo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome completo'}),
         } 
+
+class PresencaForm(forms.ModelForm):
+    data = forms.DateField(
+        label="Data",
+        input_formats=["%Y-%m-%d", "%d/%m/%Y"],
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format="%Y-%m-%d")
+    )
+
+    class Meta:
+        model = Presenca
+        fields = ['aluno', 'data', 'presente']
+        widgets = {
+            'aluno': forms.Select(attrs={'class': 'form-select'}),
+            'presente': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
