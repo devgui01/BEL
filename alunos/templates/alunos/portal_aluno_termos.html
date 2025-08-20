@@ -1,0 +1,37 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Termo de Segurança{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="mb-3">Termo de Segurança e Conduta</h4>
+          <p>Para alunos Kids e responsáveis: leia com atenção as regras de segurança do CT e confirme sua concordância.</p>
+          <ul>
+            <li>Uso obrigatório de uniforme adequado e higiene pessoal.</li>
+            <li>Respeito aos professores, colegas e às regras do tatame.</li>
+            <li>Informar condições de saúde aos responsáveis técnicos.</li>
+            <li>Responsáveis autorizados devem buscar/entregar o aluno no horário.</li>
+            <li>O treino deve ser interrompido imediatamente em caso de dor ou mal-estar.</li>
+          </ul>
+          <form method="post" class="mt-3">
+            {% csrf_token %}
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="aceitar" name="aceitar">
+              <label class="form-check-label" for="aceitar">
+                Declaro que li e aceito o Termo (versão {{ version }})
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Continuar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

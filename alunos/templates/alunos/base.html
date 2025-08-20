@@ -240,7 +240,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' and request.resolver_match.url_name != 'role-select' and request.resolver_match.url_name != 'aluno-login' and request.resolver_match.url_name != 'index' %}
+                {% if user.is_authenticated and user.is_staff %}
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'aluno-list' %}">
@@ -264,7 +264,7 @@
                     </li>
                 </ul>
                 {% endif %}
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and request.resolver_match.url_name != 'role-select' and request.resolver_match.url_name != 'aluno-login' and request.resolver_match.url_name != 'aluno-signup' %}
                 <div class="dropdown ms-auto">
                     <div class="avatar-dropdown d-flex align-items-center" data-bs-toggle="dropdown">
                         {% if user.profile and user.profile.avatar %}
@@ -305,7 +305,7 @@
     </nav>
 
     <div class="main-container">
-        {% if messages %}
+        {% if messages and request.resolver_match.url_name != 'role-select' %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
                     {{ message }}

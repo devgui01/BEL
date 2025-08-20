@@ -8,6 +8,8 @@ from datetime import timedelta
 from django.db.models import Q, OuterRef, Subquery, Max, Case, When, Value, F, CharField, Count
 from django.db import transaction
 from .forms import GerarMensalidadeForm, AlunoForm, SignUpForm, ProfileForm, PresencaForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 import calendar
@@ -15,9 +17,21 @@ from django.http import JsonResponse
 import json
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
+from django.utils import timezone as dj_tz
 
 # Create your views here.
 
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import user_passes_test
+
+def is_professor(user):
+    return user.is_authenticated and user.is_staff
+
+def professor_required(view_func):
+    return login_required(user_passes_test(is_professor, login_url='role-select')(view_func))
+
+
+@method_decorator(user_passes_test(is_professor, login_url='role-select'), name='dispatch')
 class AlunoListView(LoginRequiredMixin, ListView):
     model = Aluno
     template_name = 'alunos/aluno_list.html'
@@ -39,6 +53,7 @@ class AlunoListView(LoginRequiredMixin, ListView):
         context['search_query'] = self.request.GET.get('search', '')
         return context
 
+@method_decorator(user_passes_test(is_professor, login_url='role-select'), name='dispatch')
 class AlunoCreateView(LoginRequiredMixin, CreateView):
     model = Aluno
     template_name = 'alunos/aluno_form.html'
@@ -50,6 +65,7 @@ class AlunoCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, 'Aluno cadastrado com sucesso!')
         return super().form_valid(form)
 
+@method_decorator(user_passes_test(is_professor, login_url='role-select'), name='dispatch')
 class AlunoUpdateView(LoginRequiredMixin, UpdateView):
     model = Aluno
     template_name = 'alunos/aluno_form.html'
@@ -63,6 +79,7 @@ class AlunoUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, 'Dados do aluno atualizados com sucesso!')
         return super().form_valid(form)
 
+@method_decorator(user_passes_test(is_professor, login_url='role-select'), name='dispatch')
 class MensalidadeListView(LoginRequiredMixin, ListView):
     model = Mensalidade
     template_name = 'alunos/mensalidade_list.html'
@@ -100,7 +117,7 @@ class MensalidadeListView(LoginRequiredMixin, ListView):
         context['mensalidades_com_status'] = mensalidades_por_aluno.values()
         return context
 
-@login_required
+@professor_required
 def registrar_pagamento(request, pk):
     if request.method == 'POST':
         try:
@@ -121,7 +138,7 @@ def registrar_pagamento(request, pk):
             return redirect('mensalidade-list')
     return redirect('mensalidade-list')
 
-@login_required
+@professor_required
 def gerar_mensalidades(request):
     if request.method == 'POST':
         # POST do formulário manual
@@ -167,7 +184,7 @@ def gerar_mensalidades(request):
         form = GerarMensalidadeForm(user=request.user)
         return render(request, 'alunos/gerar_mensalidade.html', { 'form': form }) 
 
-@login_required
+@professor_required
 def excluir_mensalidade(request, pk):
     if request.method == 'POST':
         try:
@@ -181,7 +198,7 @@ def excluir_mensalidade(request, pk):
             messages.error(request, f'Erro ao excluir mensalidade: {e}')
     return redirect('mensalidade-list')
 
-@login_required
+@professor_required
 def editar_mensalidade(request, pk):
     mensalidade = get_object_or_404(Mensalidade, pk=pk, aluno__owner=request.user)
     if request.method == 'POST':
@@ -206,7 +223,7 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
 
-@login_required
+@professor_required
 def settings_view(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -219,7 +236,7 @@ def settings_view(request):
     
     return render(request, 'alunos/settings.html', {'form': form})
 
-@login_required
+@professor_required
 def update_theme(request):
     if request.method == 'POST':
         try:
@@ -232,7 +249,7 @@ def update_theme(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required
+@professor_required
 def profile_view(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -250,8 +267,56 @@ def role_select(request):
     return render(request, 'alunos/role_select.html')
 
 def aluno_login_placeholder(request):
-    """Página de login do aluno (placeholder por enquanto)."""
-    return render(request, 'alunos/portal_aluno_login.html')
+    """Login do aluno. Autentica usuário e redireciona para o portal do aluno."""
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            return redirect('aluno-portal')
+    else:
+        form = AuthenticationForm(request)
+    return render(request, 'alunos/portal_aluno_login.html', { 'form': form })
+
+@login_required
+def aluno_portal_home(request):
+    """Home simples do portal do aluno (acesso autenticado)."""
+    profile = request.user.profile
+    if not profile.accepted_terms_at:
+        return redirect('aluno-termos')
+    return render(request, 'alunos/portal_aluno_home.html')
+
+def aluno_signup(request):
+    """Cadastro de conta para alunos. Cria usuário padrão (não staff) e faz login."""
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Garante perfil criado pelo sinal e que não é staff
+            user.is_staff = False
+            user.save()
+            auth_login(request, user)
+            messages.success(request, 'Conta de aluno criada com sucesso!')
+            return redirect('aluno-portal')
+    else:
+        form = SignUpForm()
+    return render(request, 'alunos/portal_aluno_signup.html', { 'form': form })
+
+@login_required
+def aluno_termos(request):
+    TERMS_VERSION = '2025-08-20'
+    if request.method == 'POST':
+        aceitar = request.POST.get('aceitar') == 'on'
+        if aceitar:
+            p = request.user.profile
+            p.accepted_terms_at = dj_tz.now()
+            p.accepted_terms_version = TERMS_VERSION
+            p.save()
+            messages.success(request, 'Termo aceito. Bem-vindo!')
+            return redirect('aluno-portal')
+        else:
+            messages.error(request, 'Você precisa aceitar o termo para continuar.')
+    return render(request, 'alunos/portal_aluno_termos.html', { 'version': TERMS_VERSION })
 
 @login_required
 def relatorio_mensal(request):

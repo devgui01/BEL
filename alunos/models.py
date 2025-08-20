@@ -104,6 +104,8 @@ class UserProfile(models.Model):
     telefone = models.CharField(max_length=20, blank=True)
     endereco = models.CharField(max_length=200, blank=True)
     dark_mode = models.BooleanField(default=False)
+    accepted_terms_at = models.DateTimeField(null=True, blank=True)
+    accepted_terms_version = models.CharField(max_length=20, blank=True, default='')
 
     def __str__(self):
         return f"{self.user.username}'s profile"

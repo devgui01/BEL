@@ -4,6 +4,9 @@ from . import views
 urlpatterns = [
     path('entrar/', views.role_select, name='role-select'),
     path('aluno/login/', views.aluno_login_placeholder, name='aluno-login'),
+    path('aluno/signup/', views.aluno_signup, name='aluno-signup'),
+    path('aluno/portal/', views.aluno_portal_home, name='aluno-portal'),
+    path('aluno/termos/', views.aluno_termos, name='aluno-termos'),
     path('', views.AlunoListView.as_view(), name='aluno-list'),
     path('novo/', views.AlunoCreateView.as_view(), name='aluno-create'),
     path('editar/<int:pk>/', views.AlunoUpdateView.as_view(), name='aluno-update'),

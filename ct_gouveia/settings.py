@@ -149,7 +149,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # URLs de autenticação
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/alunos/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/alunos/entrar/'
 
 # Configuração para arquivos de mídia (uploads de usuários)
 MEDIA_URL = '/media/'
