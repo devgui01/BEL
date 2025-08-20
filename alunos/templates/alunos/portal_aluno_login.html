@@ -1,0 +1,21 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Portal do Aluno{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body text-center">
+          <h3 class="mb-3">Portal do Aluno</h3>
+          <p class="text-muted">Em breve aqui você poderá acessar suas mensalidades e presença.</p>
+          <a href="{% url 'role-select' %}" class="btn btn-secondary">Voltar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

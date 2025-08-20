@@ -245,6 +245,14 @@ def profile_view(request):
     
     return render(request, 'alunos/profile.html', {'form': form})
 
+def role_select(request):
+    """Tela inicial: escolha entre Professor (sistema atual) e Aluno (portal do aluno)."""
+    return render(request, 'alunos/role_select.html')
+
+def aluno_login_placeholder(request):
+    """Página de login do aluno (placeholder por enquanto)."""
+    return render(request, 'alunos/portal_aluno_login.html')
+
 @login_required
 def relatorio_mensal(request):
     """Relatório A4 imprimível de receitas do mês por mensalidades pagas."""

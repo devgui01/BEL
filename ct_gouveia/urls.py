@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
+from alunos import views as alunos_views
 from django.conf import settings # Importa settings
 from django.conf.urls.static import static # Importa static
 
@@ -24,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('alunos/', include('alunos.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', RedirectView.as_view(url='/accounts/login/', permanent=False), name='index'),
+    path('', alunos_views.role_select, name='index'),
 ]
 
 # Configuração para servir arquivos de mídia durante o desenvolvimento

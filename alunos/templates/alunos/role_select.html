@@ -1,0 +1,31 @@
+{% extends 'alunos/base.html' %}
+
+{% block title %}Entrar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body text-center">
+          <h3 class="mb-4">Como você deseja entrar?</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100">
+                <i class="fas fa-chalkboard-teacher"></i> Professor
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{% url 'aluno-login' %}" class="btn btn-outline-primary btn-lg w-100">
+                <i class="fas fa-user-graduate"></i> Aluno
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

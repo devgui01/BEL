@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('entrar/', views.role_select, name='role-select'),
+    path('aluno/login/', views.aluno_login_placeholder, name='aluno-login'),
     path('', views.AlunoListView.as_view(), name='aluno-list'),
     path('novo/', views.AlunoCreateView.as_view(), name='aluno-create'),
     path('editar/<int:pk>/', views.AlunoUpdateView.as_view(), name='aluno-update'),

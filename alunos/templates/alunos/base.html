@@ -232,7 +232,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'aluno-list' %}">
+            <a class="navbar-brand" href="{% url 'index' %}">
                 <img src="{% static 'gouveia.png' %}" alt="BASE ESCOLA DE LUTAS Logo">
                 <span>BASE ESCOLA DE LUTAS</span>
             </a>
@@ -240,7 +240,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' %}
+                {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' and request.resolver_match.url_name != 'role-select' and request.resolver_match.url_name != 'aluno-login' and request.resolver_match.url_name != 'index' %}
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'aluno-list' %}">
