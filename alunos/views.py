@@ -279,6 +279,13 @@ def aluno_login_placeholder(request):
     return render(request, 'alunos/portal_aluno_login.html', { 'form': form })
 
 @login_required
+def professor_dashboard(request):
+    """Dashboard do professor - redireciona para lista de alunos."""
+    if not request.user.is_staff:
+        return redirect('role-select')
+    return redirect('aluno-list')
+
+@login_required
 def aluno_portal_home(request):
     """Home simples do portal do aluno (acesso autenticado)."""
     profile = request.user.profile
