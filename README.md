@@ -15,7 +15,7 @@ Este é um sistema simples para gerenciamento de alunos e mensalidades da BASE E
    ```
    pip install -r requirements.txt
    ```
-3. Execute o programa principal:
+3. Execute o programa principal :
    ```
    python main.py
    ```
